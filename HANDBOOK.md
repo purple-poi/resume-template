@@ -19,18 +19,13 @@ make clean    # 清理编译产物
 latexmk -xelatex -cd -outdir=../build src/resume-cn.tex
 ```
 
-其中 `-xelatex` 选择 XeLaTeX，`-cd` 进入 `src/` 编译，
-`-outdir=../build` 将 PDF、日志和辅助文件写入仓库根目录的 `build/`。
+其中 `-xelatex` 选择 XeLaTeX，`-cd` 进入 `src/` 编译，`-outdir=../build` 将 PDF、日志和辅助文件写入仓库根目录的 `build/`。
 
 ### 为什么输出到 `build/`
 
-这不是 LaTeX 默认行为，而是当前 `Makefile` 的设置。直接运行
-在 `src/` 中运行 `xelatex resume-cn.tex` 时，LaTeX 默认把 PDF 和辅助文件放在
-当前目录。
+这不是 LaTeX 默认行为，而是当前 `Makefile` 的设置。在 `src/` 中运行 `xelatex resume-cn.tex` 时，LaTeX 默认把 PDF 和辅助文件放在当前目录。
 
-如果想改成其他目录，把 `Makefile` 中所有 `-outdir=../build` 改成例如
-`-outdir=../output`；如果删除该参数，文件就会生成在 `src/` 中。
-Overleaf 不依赖本地 `Makefile`，会自行管理编译产物，因此不要上传 `build/`。
+如果想改成其他目录，把 `Makefile` 中所有 `-outdir=../build` 改成例如 `-outdir=../output`；如果删除该参数，文件就会生成在 `src/` 中。Overleaf 不依赖本地 `Makefile`，会自行管理编译产物，因此不要上传 `build/`。
 
 ### Overleaf 编译
 
@@ -48,15 +43,13 @@ Overleaf 不依赖本地 `Makefile`，会自行管理编译产物，因此不要
 - `src/assets/`：头像、小 Logo 和右上角大 Logo；
 - `src/fonts/`：Font Awesome 图标字体和 Palatino 粗体字体。
 
-Donk 只作为 `basic_info.json` 和正文中的占位内容。以后使用模板时，使用者也修改
-同一个 JSON 和两个主文件，不需要创建人物专属的 TeX adapter。
+Donk 只作为 `basic_info.json` 和正文中的占位内容。以后使用模板时，使用者也修改同一个 JSON 和两个主文件，不需要创建人物专属的 TeX adapter。
 
 ## 3. 修改简历内容
 
 ### 基础信息与页眉
 
-姓名、职业标题、电话、头像开关、头像路径、两个 Logo 路径和页眉字段全部在
-`src/basic_info/basic_info.json` 中修改。中英文主文件已经调用：
+姓名、职业标题、电话、头像开关、头像路径、两个 Logo 路径和页眉字段全部在 `src/basic_info/basic_info.json` 中修改。中英文主文件已经调用：
 
 ```tex
 \LoadResumeBasicInfo
@@ -73,8 +66,7 @@ Donk 只作为 `basic_info.json` 和正文中的占位内容。以后使用模�
   {\ResumeHeaderFieldsCN}
 ```
 
-英文版使用对应的 `EN` 变量。增加或删除页眉信息只需要修改 JSON 的
-`extra_fields`，不需要修改这段 LaTeX。
+英文版使用对应的 `EN` 变量。增加或删除页眉信息只需要修改 JSON 的 `extra_fields`，不需要修改这段 LaTeX。
 
 ### 章节与经历
 
@@ -128,8 +120,7 @@ Donk 只作为 `basic_info.json` 和正文中的占位内容。以后使用模�
 - `src/assets/entry-logo.png`：经历标题前的小 Logo；
 - `src/assets/header-logo.png`：右上角大 Logo。
 
-如果更改文件名，只需同步修改 `basic_info.json` 中的 `avatar`、
-`entry_logo` 或 `header_logo`。
+如果更改文件名，只需同步修改 `basic_info.json` 中的 `avatar`、`entry_logo` 或 `header_logo`。
 
 ### 调整图片尺寸和位置
 
@@ -147,8 +138,7 @@ Donk 只作为 `basic_info.json` 和正文中的占位内容。以后使用模�
 \SetResumeBrandTopShift{-0.16cm}
 ```
 
-宽度越小，图片越小；`\SetResumeBrandTopShift` 的负值绝对值越大，右上角 Logo
-越靠上。信息栏宽度会根据头像和 Logo 宽度自动重新计算。
+宽度越小，图片越小；`\SetResumeBrandTopShift` 的负值绝对值越大，右上角 Logo 越靠上。信息栏宽度会根据头像和 Logo 宽度自动重新计算。
 
 ## 5. 修改版式
 
@@ -169,8 +159,7 @@ Donk 只作为 `basic_info.json` 和正文中的占位内容。以后使用模�
 \fontsize{11pt}{13pt}\selectfont
 ```
 
-专业技能左栏宽度位于 `skills` 环境中的 `p{2.12cm}`。数值减小会缩窄左栏，
-数值增大会加宽左栏。
+专业技能左栏宽度位于 `skills` 环境中的 `p{2.12cm}`。数值减小会缩窄左栏，数值增大会加宽左栏。
 
 页面边距由 `src/chicv.cls` 中的 `geometry` 设置：
 
@@ -178,13 +167,9 @@ Donk 只作为 `basic_info.json` 和正文中的占位内容。以后使用模�
 \RequirePackage[a4paper,left=0.6cm,right=0.6cm,top=1cm,bottom=1cm]{geometry}
 ```
 
-西文字体在 `\setmainfont` 中设置，当前正文使用 TeX Gyre Pagella，粗体使用
-`src/fonts/Palatino Linotype.ttf`；图标使用 `src/fonts/FontAwesome6.otf`。中文字体按
-`src/fonts/SimSun.ttf`、系统 `Songti SC`、Overleaf 自带 `FandolSong` 的顺序回退。
-替换字体时需要同步修改 `src/chicv.cls` 中的字体文件名或字体名称。
+西文字体在 `\setmainfont` 中设置，当前正文使用 TeX Gyre Pagella，粗体使用 `src/fonts/Palatino Linotype.ttf`；图标使用 `src/fonts/FontAwesome6.otf`。中文字体按 `src/fonts/SimSun.ttf`、系统 `Songti SC`、Overleaf 自带 `FandolSong` 的顺序回退。替换字体时需要同步修改 `src/chicv.cls` 中的字体文件名或字体名称。
 
-如果内容超过一页，优先精简文字，其次小幅降低条目间距和行距。不要删除页边距、
-字体或图片依赖来强行压缩页面。
+如果内容超过一页，优先精简文字，其次小幅降低条目间距和行距。不要删除页边距、字体或图片依赖来强行压缩页面。
 
 ## 6. 使用基础信息 JSON
 
@@ -244,9 +229,7 @@ cp src/basic_info/basic_info.example.json src/basic_info/basic_info.json
 - `show_in_header`：是否显示在页眉；
 - `after`：字段后如何排版，可选 `separator`、`line` 或 `none`。
 
-例如，第一行放“单位 | 职位”时，单位设置为 `separator`，职位设置为 `line`。
-最后一个可见字段通常使用 `none`。数组可以继续追加所在地、邮箱、网站、语言、
-证书或政治面貌等字段，不需要修改 `src/chicv.cls`。
+例如，第一行放“单位 | 职位”时，单位设置为 `separator`，职位设置为 `line`。最后一个可见字段通常使用 `none`。数组可以继续追加所在地、邮箱、网站、语言、证书或政治面貌等字段，不需要修改 `src/chicv.cls`。
 
 主文件已经加载 JSON。新建其他主文件时，需要在 `\documentclass` 后加入：
 
@@ -261,14 +244,11 @@ cp src/basic_info/basic_info.example.json src/basic_info/basic_info.json
 \ResumeExtraFieldsEN[1.8cm]
 ```
 
-当前中英文主文件使用 `private` 模式并直接显示 JSON 数据。真实的
-`basic_info.json` 已被 `.gitignore` 忽略，不要手动提交到公开仓库；公开模板使用
-`basic_info.example.json` 作为回退数据。
+当前中英文主文件使用 `private` 模式并直接显示 JSON 数据。真实的 `basic_info.json` 已被 `.gitignore` 忽略，不要手动提交到公开仓库；公开模板使用 `basic_info.example.json` 作为回退数据。
 
 ## 7. 选择图标
 
-打开 `ref/fontawesome-icons.pdf`，按英文名称搜索并复制四位十六进制编码。
-JSON 和 `\cvsection` 中都只填写编码本身，不添加 `0x` 或 `\u`：
+打开 `ref/fontawesome-icons.pdf`，按英文名称搜索并复制四位十六进制编码。JSON 和 `\cvsection` 中都只填写编码本身，不添加 `0x` 或 `\u`：
 
 ```json
 "icon": "F3C5"
@@ -278,8 +258,7 @@ JSON 和 `\cvsection` 中都只填写编码本身，不添加 `0x` 或 `\u`：
 \cvsection{F3C5}{所在地}
 ```
 
-固定字段若需要图标，可以在布局中写 `\faIcon{F095}`；动态字段直接设置 JSON
-对象的 `icon` 值。
+固定字段若需要图标，可以在布局中写 `\faIcon{F095}`；动态字段直接设置 JSON 对象的 `icon` 值。
 
 ## 8. 必要上传文件
 
@@ -303,8 +282,7 @@ src/
     Palatino Linotype.ttf
 ```
 
-只编译中文时可以省略 `resume-en.tex`；只编译英文时可以省略 `resume-cn.tex`。
-`build/` 不需要上传。
+只编译中文时可以省略 `resume-en.tex`；只编译英文时可以省略 `resume-cn.tex`。`build/` 不需要上传。
 
 ### GitHub 模板仓库
 
@@ -332,5 +310,4 @@ src/
     Palatino Linotype.ttf
 ```
 
-不要上传包含真实姓名、电话或其他隐私信息的 `basic_info.json`。主文件找不到
-该文件时会自动读取 `basic_info.example.json`，因此公开模板仍可直接编译。
+不要上传包含真实姓名、电话或其他隐私信息的 `basic_info.json`。主文件找不到该文件时会自动读取 `basic_info.example.json`，因此公开模板仍可直接编译。

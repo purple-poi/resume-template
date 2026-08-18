@@ -1,7 +1,6 @@
 # Resume Template
 
-An A4 resume template with Chinese and English versions, designed for XeLaTeX and Overleaf. The current resume content about donk is placeholder data. Shared profile information is stored in`src/basic_info/basic_info.json`, while the section content lives in
-`src/resume-cn.tex` and `src/resume-en.tex`.
+An A4 resume template with Chinese and English versions, designed for XeLaTeX and Overleaf. The current resume content about donk is placeholder data. Shared profile information is stored in `src/basic_info/basic_info.json`, while the section content lives in `src/resume-cn.tex` and `src/resume-en.tex`.
 
 The template supports optional avatars, dynamic header fields, header and entry logos, Font Awesome icons, and separate Chinese and English layouts.
 
@@ -42,8 +41,7 @@ src/
     Palatino Linotype.ttf
 ```
 
-If only one language is needed, the other `resume-*.tex` file may be omitted.
-Set `src/resume-cn.tex` or `src/resume-en.tex` as the main document, then select **XeLaTeX** under **Menu → Compiler** in Overleaf.
+If only one language is needed, the other `resume-*.tex` file may be omitted. Set `src/resume-cn.tex` or `src/resume-en.tex` as the main document, then select **XeLaTeX** under **Menu → Compiler** in Overleaf.
 
 Public repositories should keep `src/basic_info/basic_info.example.json` only. Do not commit `basic_info.json` if it contains real personal information. See [HANDBOOK.md](./HANDBOOK.md) for details about profile fields, resume content, images, icons, and layout customization.
 
