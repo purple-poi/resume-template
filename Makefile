@@ -3,11 +3,11 @@
 all: cn en
 
 cn:
-	latexmk -xelatex -cd -outdir=build resume-cn.tex
+	latexmk -xelatex -cd -outdir=../build src/resume-cn.tex
 
 en:
-	latexmk -xelatex -cd -outdir=build resume-en.tex
+	latexmk -xelatex -cd -outdir=../build src/resume-en.tex
 
 clean:
-	latexmk -C -cd -outdir=build resume-cn.tex
-	latexmk -C -cd -outdir=build resume-en.tex
+	latexmk -C -cd -outdir=../build src/resume-cn.tex
+	latexmk -C -cd -outdir=../build src/resume-en.tex

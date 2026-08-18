@@ -1,52 +1,52 @@
-# Resume template
+# Resume Template
 
-这是一个面向 XeLaTeX 和 Overleaf 的 A4 单页中英文简历模板。当前 Donk 履历是
-占位示例：基础信息统一保存在 `basic_info/basic_info.json`，章节正文分别位于
-`resume-cn.tex` 和 `resume-en.tex`，不存在人物专属的 TeX adapter。
+An A4 resume template with Chinese and English versions, designed for XeLaTeX and Overleaf. The current resume content about donk is placeholder data. Shared profile information is stored in`src/basic_info/basic_info.json`, while the section content lives in
+`src/resume-cn.tex` and `src/resume-en.tex`.
 
-模板支持头像开关、动态页眉字段、页眉大 Logo、经历项小 Logo、Font Awesome
-图标以及中英文双版本。
+The template supports optional avatars, dynamic header fields, header and entry logos, Font Awesome icons, and separate Chinese and English layouts.
 
-## 快速开始
+## Quick Start
 
-本地需要安装包含 `latexmk` 和 XeLaTeX 的 TeX Live。在本目录运行：
+Install a TeX Live distribution that includes `latexmk` and XeLaTeX, then run the following command from the repository root:
 
 ```bash
 make
 ```
 
-生成文件为：
+The generated PDFs are written to:
 
 ```text
 build/resume-cn.pdf
 build/resume-en.pdf
 ```
 
-`build/` 本项目在 `Makefile` 中通过`latexmk -outdir=build` 设置的。它只保存编译产物，不需要上传到 Overleaf。
+The root-level `Makefile` manages the `build/` directory. It contains generated files only and does not need to be uploaded to Overleaf.
 
-## Overleaf 最小上传清单
+## Minimum Overleaf File Set
 
-同时保留中英文版本时，只需保持下面的相对目录结构：
+To compile both language versions, preserve the following relative directory structure:
 
 ```text
-resume-cn.tex
-resume-en.tex
-chicv.cls
-basic_info/
-  basic_info.json
-assets/
-  avatar.png
-  entry-logo.png
-  header-logo.png
-fonts/
-  FontAwesome6.otf
-  Palatino Linotype.ttf
+src/
+  resume-cn.tex
+  resume-en.tex
+  chicv.cls
+  basic_info/
+    basic_info.json
+  assets/
+    avatar.png
+    entry-logo.png
+    header-logo.png
+  fonts/
+    FontAwesome6.otf
+    Palatino Linotype.ttf
 ```
 
-如果只编译一种语言，可以不上传另一个 `resume-*.tex`。上传后将主文档设为
-`resume-cn.tex` 或 `resume-en.tex`，并在 Overleaf 的 **Menu → Compiler** 中
-选择 **XeLaTeX**。
+If only one language is needed, the other `resume-*.tex` file may be omitted.
+Set `src/resume-cn.tex` or `src/resume-en.tex` as the main document, then select **XeLaTeX** under **Menu → Compiler** in Overleaf.
 
-公开 GitHub 仓库只保留 `basic_info.example.json`，不要提交包含真实个人信息的
-`basic_info.json`。具体字段、内容修改、头像与 Logo、图标和版式说明见
-[HANDBOOK.md](./HANDBOOK.md)。
+Public repositories should keep `src/basic_info/basic_info.example.json` only. Do not commit `basic_info.json` if it contains real personal information. See [HANDBOOK.md](./HANDBOOK.md) for details about profile fields, resume content, images, icons, and layout customization.
+
+## Reference
+
+- [roife/resume](https://github.com/roife/resume/tree/master) — the original resume project used as a design and structure reference.

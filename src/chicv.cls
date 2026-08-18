@@ -32,16 +32,16 @@
 \RequirePackage{xcolor}
 \RequirePackage{xparse}
 
-% The class works both when compiled from latex/ and when latex/resume-*.tex is
+% The class works both when compiled from src/ and when src/resume-*.tex is
 % selected as the root document from the repository root (as in Overleaf).
 \newcommand{\ResumeProjectPath}{}
 \newcommand{\ResumeAssetPath}{}
 \IfFileExists{fonts/FontAwesome6.otf}{%
   \renewcommand{\ResumeAssetPath}{fonts/}%
 }{%
-  \IfFileExists{latex/fonts/FontAwesome6.otf}{%
-    \renewcommand{\ResumeProjectPath}{latex/}%
-    \renewcommand{\ResumeAssetPath}{latex/fonts/}%
+  \IfFileExists{src/fonts/FontAwesome6.otf}{%
+    \renewcommand{\ResumeProjectPath}{src/}%
+    \renewcommand{\ResumeAssetPath}{src/fonts/}%
   }{%
     \ClassError{chicv}{FontAwesome6.otf was not found}
       {Keep the fonts directory beside chicv.cls.}%
@@ -314,13 +314,13 @@
   \IfFileExists{basic_info/basic_info.json}{%
     \JSONParseFromFile{\ResumeBasicInfoJSON}{basic_info/basic_info.json}%
   }{%
-    \IfFileExists{latex/basic_info/basic_info.json}{%
-      \JSONParseFromFile{\ResumeBasicInfoJSON}{latex/basic_info/basic_info.json}%
+    \IfFileExists{src/basic_info/basic_info.json}{%
+      \JSONParseFromFile{\ResumeBasicInfoJSON}{src/basic_info/basic_info.json}%
     }{%
       \IfFileExists{basic_info/basic_info.example.json}{%
         \JSONParseFromFile{\ResumeBasicInfoJSON}{basic_info/basic_info.example.json}%
       }{%
-        \JSONParseFromFile{\ResumeBasicInfoJSON}{latex/basic_info/basic_info.example.json}%
+        \JSONParseFromFile{\ResumeBasicInfoJSON}{src/basic_info/basic_info.example.json}%
       }%
     }%
   }%
