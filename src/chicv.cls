@@ -69,6 +69,15 @@
   \setCJKsansfont{Noto Sans CJK SC}
   \setCJKmonofont{Noto Sans Mono CJK SC}
 }{
+  \IfFontExistsTF{Songti SC}{
+    \setCJKmainfont{Songti SC}[
+      BoldFont=Songti SC Bold
+    ]
+    \setCJKsansfont{Songti SC}[
+      BoldFont=Songti SC Bold
+    ]
+    \setCJKmonofont{Songti SC}
+  }{
     \setCJKmainfont{FandolSong-Regular.otf}[
       BoldFont=FandolSong-Bold.otf,
       ItalicFont=FandolKai-Regular.otf
@@ -77,6 +86,7 @@
       BoldFont=FandolHei-Bold.otf
     ]
     \setCJKmonofont{FandolFang-Regular.otf}
+  }
 }
 
 \newfontface\ResumeFA{FontAwesome6.otf}[Path=\ResumeAssetPath]
@@ -171,18 +181,32 @@
   \vspace{0.15em}%
 }
 
+\newif\ifResumePreviousWasEntry
+\ResumePreviousWasEntryfalse
+
 \NewDocumentCommand{\cvsection}{m m}{%
-  \par\vspace{0.18em}\vspace{-\ResumeEntryExtraSkip}%
-  \noindent{\color{resumerule}\rule{\linewidth}{\ResumeSectionRuleThickness}}\par
-  \nobreak\vspace{0.08em}%
-  \noindent{\fontsize{11pt}{13pt}\selectfont\bfseries \faIcon{#1}\enspace #2\par}%
-  \nobreak\vspace{0.12em}%
+  \par
+  \vspace{0.7em}%
+  {\color{resumerule}\hrule height \ResumeSectionRuleThickness}%
+  \nobreak\vspace{0.5em}%
+  \noindent{%
+    \fontsize{12pt}{13pt}\selectfont
+    \bfseries
+    \faIcon{#1}\enspace #2\par
+  }%
+  \nobreak\vspace{0.10em}%
+  \ResumePreviousWasEntryfalse
 }
 
 \NewDocumentCommand{\cventry}{m m m m +m}{%
-  \par\noindent
+  \par
+  \ifResumePreviousWasEntry
+    \vspace{0.18em}%
+    \vspace{\ResumeEntryExtraSkip}%
+  \fi
+  \noindent
   \begin{tabular*}{\linewidth}{@{}l@{\extracolsep{\fill}}r@{}}
-    {\fontsize{11.6pt}{13pt}\selectfont\bfseries #1} & #2
+    {\fontsize{11pt}{13pt}\selectfont\bfseries #1} & #2
   \end{tabular*}\par
   \ifboolexpr{ not test {\ifstrempty{#3}} or not test {\ifstrempty{#4}} }{%
     \noindent
@@ -190,7 +214,8 @@
       #3 & #4
     \end{tabular*}\par
   }{}%
-  #5\par\vspace{0.18em}\vspace{\ResumeEntryExtraSkip}%
+  #5\par
+  \ResumePreviousWasEntrytrue
 }
 
 \newlist{cvitems}{itemize}{2}
@@ -219,7 +244,7 @@
   \noindent\begin{tabularx}{\linewidth}{@{}>{\bfseries\raggedleft\arraybackslash}p{2.12cm}@{\hspace{0.55em}}>{\arraybackslash}X@{}}
     #1
   \end{tabularx}
-  \vspace{-1.35em}% Match Typst's grid-to-following-section spacing.
+  \vspace{-0.45em}% Match Typst's grid-to-following-section spacing.
 }{}
 
 \NewDocumentCommand{\skillrow}{O{0pt} m +m}{%
