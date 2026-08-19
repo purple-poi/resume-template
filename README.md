@@ -19,7 +19,7 @@ build/resume-cn.pdf
 build/resume-en.pdf
 ```
 
-The root-level `Makefile` manages the `build/` directory. It contains generated files only and does not need to be uploaded to Overleaf.
+The root-level `resume-cn.pdf` and `resume-en.pdf` files are checked-in examples. The `Makefile` writes fresh builds to `build/`; copy them to the repository root only when intentionally refreshing the example PDFs. The `build/` directory contains generated files only and does not need to be uploaded to Overleaf.
 
 ## Minimum Overleaf File Set
 
@@ -34,7 +34,6 @@ src/
     basic_info.tex
   assets/
     avatar.png
-    entry-logo.png
     header-logo.png
   fonts/
     FontAwesome6.otf
@@ -42,7 +41,7 @@ src/
 
 If you start from the public template, copy `src/basic_info/basic_info.example.tex` to `src/basic_info/basic_info.tex` and edit that file in Overleaf. If only one language is needed, the other `resume-*.tex` file may be omitted. Set `src/resume-cn.tex` or `src/resume-en.tex` as the main document, then select **XeLaTeX** under **Menu → Compiler** in Overleaf.
 
-The checked-in example file contains placeholder data. Keep your edited `basic_info.tex` private; it is ignored by Git.
+The checked-in example file contains placeholder data. Keep your edited `basic_info.tex` private; it is ignored by Git. The header logo has an explicit `true`/`false` switch, while entry logos are disabled by default and registered separately for each organization.
 
 See [HANDBOOK.md](./HANDBOOK.md) for the configuration commands, field syntax, image paths, icons, and layout customization.
 

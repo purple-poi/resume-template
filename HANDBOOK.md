@@ -49,7 +49,7 @@ Donk 只作为 `basic_info.example.tex` 和正文中的占位内容。以后使�
 
 ### 基础信息与页眉
 
-姓名、职业标题、电话、头像开关、头像路径、两个 Logo 路径和页眉字段全部在 `src/basic_info/basic_info.tex` 中修改。中英文主文件已经调用：
+姓名、职业标题、电话、头像开关、头像路径、右上角 Logo、各单位 Logo 和页眉字段全部在 `src/basic_info/basic_info.tex` 中修改。中英文主文件已经调用：
 
 ```tex
 \LoadResumeBasicInfo
@@ -112,23 +112,47 @@ Donk 只作为 `basic_info.example.tex` 和正文中的占位内容。以后使�
 
 改为 `true` 即可显示头像。
 
+### 开关右上角 Logo
+
+右上角 Header Logo 同样使用 `true` 或 `false`：
+
+```tex
+\ResumeSetHeaderLogo{false}{}
+```
+
+需要显示时，配置为：
+
+```tex
+\ResumeSetHeaderLogo{true}{assets/header-logo.png}
+```
+
+关闭后不会加载图片，右侧占用的宽度也会自动释放。
+
 ### 替换图片
 
-最简单的方式是保持文件名不变，直接替换：
+头像和右上角 Logo 最简单的替换方式是保持文件名不变：
 
 - `src/assets/avatar.png`：头像；
-- `src/assets/entry-logo.png`：经历标题前的小 Logo；
 - `src/assets/header-logo.png`：右上角大 Logo。
 
-如果更改文件名，只需同步修改 `basic_info.tex` 中的 `\ResumeSetAvatar`、`\ResumeSetEntryLogo` 或 `\ResumeSetHeaderLogo`。
+如果更改文件名，只需同步修改 `basic_info.tex` 中的 `\ResumeSetAvatar` 或 `\ResumeSetHeaderLogo`。
+
+经历标题前的小 Logo 按单位分别配置，默认不显示。需要使用时，将图片放入 `src/assets/`，再在 `basic_info.tex` 中用不同 ID 注册：
+
+```tex
+\ResumeSetEntryLogo{company-a}{assets/company-a-logo.png}
+\ResumeSetEntryLogo{company-b}{assets/company-b-logo.png}
+```
 
 ### 调整图片尺寸和位置
 
 小 Logo 默认高度为 `1.18em`；经历标题中使用：
 
 ```tex
-\ResumeEntryWithLogo{\ResumeEntryLogoFile}{单位名称}
+\ResumeEntryWithLogo{company-a}{单位名称}
 ```
+
+第一个参数是单位 ID，必须与 `basic_info.tex` 中注册的 ID 一致。未注册该 ID 时，这个命令只显示单位名称，不会插入默认 Logo。不同经历可以使用不同 ID，从而显示各自的 Logo。
 
 头像和右上角 Logo 的宽度可以在主文件中统一设置：
 
@@ -190,11 +214,10 @@ cp src/basic_info/basic_info.example.tex src/basic_info/basic_info.tex
 \ResumeSetPhone{+86 138 0000 0000}
 \ResumeSetSubtitle{职业标题}{PROFESSIONAL TITLE}
 \ResumeSetAvatar{true}{assets/avatar.png}
-\ResumeSetHeaderLogo{assets/header-logo.png}
-\ResumeSetEntryLogo{assets/entry-logo.png}
+\ResumeSetHeaderLogo{true}{assets/header-logo.png}
 ```
 
-不需要的电话可以写成 `\ResumeSetPhone{}`。头像开关使用 `true` 或 `false`。
+不需要的电话可以写成 `\ResumeSetPhone{}`。头像和右上角 Logo 的开关均使用 `true` 或 `false`。经历 Logo 不属于固定必填信息，需要时再按第 4 节的说明配置。
 
 ### 动态页眉字段
 
@@ -283,13 +306,12 @@ src/
     basic_info.tex
   assets/
     avatar.png
-    entry-logo.png
     header-logo.png
   fonts/
     FontAwesome6.otf
 ```
 
-只编译中文时可以省略 `resume-en.tex`；只编译英文时可以省略 `resume-cn.tex`。`build/` 不需要上传。
+只编译中文时可以省略 `resume-en.tex`；只编译英文时可以省略 `resume-cn.tex`。使用经历 Logo 时，另外上传自己配置的图片；`build/` 不需要上传。
 
 ### GitHub 模板仓库
 
@@ -300,6 +322,8 @@ GitHub 中保留相同的模板源文件，但只提交示例 TeX 配置，不�
 README.md
 HANDBOOK.md
 Makefile
+resume-cn.pdf
+resume-en.pdf
 ref/
   fontawesome-icons.pdf
 src/
@@ -310,7 +334,7 @@ src/
     basic_info.example.tex
   assets/
     avatar.png
-    entry-logo.png
+    entry-logo.png        # 可选素材，不会默认显示
     header-logo.png
   fonts/
     FontAwesome6.otf

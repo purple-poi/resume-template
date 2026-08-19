@@ -231,12 +231,20 @@
 % Generic, content-agnostic profile header. The root résumé supplies all text
 % and image paths, while a small TeX configuration file supplies basic info.
 \providecommand{\ResumeShowAvatar}{true}
+\providecommand{\ResumeShowHeaderLogo}{false}
 \newif\ifResumeAvatarVisible
+\newif\ifResumeHeaderLogoVisible
 \ResumeAvatarVisibletrue
+\ResumeHeaderLogoVisiblefalse
 \AtBeginDocument{%
   \ifdefstring{\ResumeShowAvatar}{false}
     {\ResumeAvatarVisiblefalse}
     {\ResumeAvatarVisibletrue}%
+  \ifdefstring{\ResumeShowHeaderLogo}{false}
+    {\ResumeHeaderLogoVisiblefalse}
+    {\ifdefempty{\ResumeHeaderLogoFile}
+      {\ResumeHeaderLogoVisiblefalse}
+      {\ResumeHeaderLogoVisibletrue}}%
 }
 
 \newlength{\ResumeHeaderInfoWidth}
@@ -276,18 +284,28 @@
 \NewDocumentCommand{\ResumeProfileHeader}{m m m m +m}{%
   \noindent
   \ifResumeAvatarVisible
-    \setlength{\ResumeHeaderInfoWidth}{%
-      \dimexpr\linewidth-\ResumeAvatarWidth-\ResumeBrandWidth-\ResumeHeaderSpacingWithAvatar\relax
-    }%
+    \ifResumeHeaderLogoVisible
+      \setlength{\ResumeHeaderInfoWidth}{%
+        \dimexpr\linewidth-\ResumeAvatarWidth-\ResumeBrandWidth-\ResumeHeaderSpacingWithAvatar\relax
+      }%
+    \else
+      \setlength{\ResumeHeaderInfoWidth}{%
+        \dimexpr\linewidth-\ResumeAvatarWidth-\ResumeHeaderSpacingWithoutAvatar\relax
+      }%
+    \fi
     \begin{minipage}[t]{\ResumeAvatarWidth}
       \vspace{0pt}%
       \includegraphics[width=\ResumeAvatarWidth]{\ResumeProjectPath#3}%
     \end{minipage}%
     \hfill
   \else
-    \setlength{\ResumeHeaderInfoWidth}{%
-      \dimexpr\linewidth-\ResumeBrandWidth-\ResumeHeaderSpacingWithoutAvatar\relax
-    }%
+    \ifResumeHeaderLogoVisible
+      \setlength{\ResumeHeaderInfoWidth}{%
+        \dimexpr\linewidth-\ResumeBrandWidth-\ResumeHeaderSpacingWithoutAvatar\relax
+      }%
+    \else
+      \setlength{\ResumeHeaderInfoWidth}{\linewidth}%
+    \fi
   \fi
   \begin{minipage}[t]{\ResumeHeaderInfoWidth}
     \vspace{0pt}%
@@ -297,12 +315,14 @@
     \vspace{0.48em}%
     {\fontsize{9.7pt}{12.2pt}\selectfont #5}%
   \end{minipage}%
-  \hfill
-  \begin{minipage}[t]{\ResumeBrandWidth}
-    \vspace{\ResumeBrandTopShift}%
-    \raggedleft
-    \includegraphics[width=\ResumeBrandWidth]{\ResumeProjectPath#4}\par
-  \end{minipage}%
+  \ifResumeHeaderLogoVisible
+    \hfill
+    \begin{minipage}[t]{\ResumeBrandWidth}
+      \vspace{\ResumeBrandTopShift}%
+      \raggedleft
+      \includegraphics[width=\ResumeBrandWidth]{\ResumeProjectPath#4}\par
+    \end{minipage}%
+  \fi
   \par\vspace{0.22em}%
 }
 
@@ -313,7 +333,18 @@
 }
 
 \NewDocumentCommand{\ResumeEntryWithLogo}{O{1.18em} m m}{%
-  \ResumeEntryLogo[#1]{#2}\hspace{0.38em}#3%
+  \ifcsname ResumeEntryLogo@#2\endcsname
+    \begingroup
+    \edef\ResumeEntryLogoPath{\csname ResumeEntryLogo@#2\endcsname}%
+    \ifx\ResumeEntryLogoPath\@empty
+      #3%
+    \else
+      \ResumeEntryLogo[#1]{\ResumeEntryLogoPath}\hspace{0.38em}#3%
+    \fi
+    \endgroup
+  \else
+    #3%
+  \fi
 }
 
 % --------------------------------------------------------------------------
@@ -329,7 +360,6 @@
 \providecommand{\ResumeSubtitleEN}{}
 \providecommand{\ResumeAvatarFile}{}
 \providecommand{\ResumeHeaderLogoFile}{}
-\providecommand{\ResumeEntryLogoFile}{}
 
 \NewDocumentCommand{\ResumeSetName}{m m}{%
   \renewcommand{\ResumeNameCN}{#1}%
@@ -350,12 +380,13 @@
   \renewcommand{\ResumeAvatarFile}{#2}%
 }
 
-\NewDocumentCommand{\ResumeSetHeaderLogo}{m}{%
-  \renewcommand{\ResumeHeaderLogoFile}{#1}%
+\NewDocumentCommand{\ResumeSetHeaderLogo}{m m}{%
+  \renewcommand{\ResumeShowHeaderLogo}{#1}%
+  \renewcommand{\ResumeHeaderLogoFile}{#2}%
 }
 
-\NewDocumentCommand{\ResumeSetEntryLogo}{m}{%
-  \renewcommand{\ResumeEntryLogoFile}{#1}%
+\NewDocumentCommand{\ResumeSetEntryLogo}{m m}{%
+  \expandafter\def\csname ResumeEntryLogo@#1\endcsname{#2}%
 }
 
 % Each field is stored as a small TeX command rather than as JSON.  The
