@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{chicv}[2026/08/18 Overleaf-ready CV class]
+\ProvidesClass{chicv}[2026/08/19 Overleaf-ready CV class]
 
 \newif\ifResumePrivate
 \ResumePrivatefalse
@@ -25,52 +25,58 @@
 \RequirePackage{graphicx}
 \RequirePackage{hyperref}
 \RequirePackage{lastpage}
-\RequirePackage{jsonparse}
 \RequirePackage{ragged2e}
 \RequirePackage{tabularx}
 \RequirePackage[normalem]{ulem}
 \RequirePackage{xcolor}
+\RequirePackage{expl3}
 \RequirePackage{xparse}
+\RequirePackage[abspath]{currfile}
 
 % The class works both when compiled from src/ and when src/resume-*.tex is
 % selected as the root document from the repository root (as in Overleaf).
+% Resolve from the main document's absolute directory so TeX's TEXINPUTS search
+% and fontspec's Path option cannot disagree about what a relative path means.
+\edef\ResumeMainPath{\currfileabsdir}
 \newcommand{\ResumeProjectPath}{}
 \newcommand{\ResumeAssetPath}{}
-\IfFileExists{fonts/FontAwesome6.otf}{%
-  \renewcommand{\ResumeAssetPath}{fonts/}%
+\IfFileExists{\ResumeMainPath fonts/FontAwesome6.otf}{%
+  \edef\ResumeProjectPath{\ResumeMainPath}%
+  \edef\ResumeAssetPath{\ResumeMainPath fonts/}%
 }{%
-  \IfFileExists{src/fonts/FontAwesome6.otf}{%
-    \renewcommand{\ResumeProjectPath}{src/}%
-    \renewcommand{\ResumeAssetPath}{src/fonts/}%
+  \IfFileExists{\ResumeMainPath src/fonts/FontAwesome6.otf}{%
+    \edef\ResumeProjectPath{\ResumeMainPath src/}%
+    \edef\ResumeAssetPath{\ResumeMainPath src/fonts/}%
   }{%
     \ClassError{chicv}{FontAwesome6.otf was not found}
       {Keep the fonts directory beside chicv.cls.}%
   }%
 }
 
-% The repository contains the original Palatino Linotype Bold face. TeX Gyre
-% Pagella is the metrically close, Overleaf-shipped Palatino face used for the
-% other styles.
+% TeX Gyre Pagella ships with TeX Live and Overleaf, so the template does not
+% depend on a separately uploaded Latin text font.
 \setmainfont{texgyrepagella-regular.otf}[
-  BoldFont={\ResumeAssetPath Palatino Linotype.ttf},
+  BoldFont=texgyrepagella-bold.otf,
   ItalicFont=texgyrepagella-italic.otf,
   BoldItalicFont=texgyrepagella-bolditalic.otf,
   Ligatures=TeX
 ]
 
-% Prefer the Songti face used by the Typst source. If a licensed SimSun.ttf is
-% placed in fonts/, it takes priority. FandolSong ships with Overleaf.
-\IfFileExists{\ResumeAssetPath SimSun.ttf}{
-  \setCJKmainfont{SimSun.ttf}[Path=\ResumeAssetPath,AutoFakeBold=2.2]
+% Overleaf includes the Noto CJK (Source Han) families. Keep Fandol as a
+% fallback for smaller local TeX Live installations which omit the Noto fonts.
+\IfFontExistsTF{Noto Serif CJK SC}{
+  \setCJKmainfont{Noto Serif CJK SC}
+  \setCJKsansfont{Noto Sans CJK SC}
+  \setCJKmonofont{Noto Sans Mono CJK SC}
 }{
-  \IfFontExistsTF{Songti SC}{
-    \setCJKmainfont{Songti SC}
-  }{
     \setCJKmainfont{FandolSong-Regular.otf}[
       BoldFont=FandolSong-Bold.otf,
       ItalicFont=FandolKai-Regular.otf
     ]
-  }
+    \setCJKsansfont{FandolHei-Regular.otf}[
+      BoldFont=FandolHei-Bold.otf
+    ]
+    \setCJKmonofont{FandolFang-Regular.otf}
 }
 
 \newfontface\ResumeFA{FontAwesome6.otf}[Path=\ResumeAssetPath]
@@ -223,7 +229,7 @@
 \NewDocumentCommand{\contactsep}{}{\enspace|\enspace}
 
 % Generic, content-agnostic profile header. The root résumé supplies all text
-% and image paths, so example data never requires a person-specific adapter.
+% and image paths, while a small TeX configuration file supplies basic info.
 \providecommand{\ResumeShowAvatar}{true}
 \newif\ifResumeAvatarVisible
 \ResumeAvatarVisibletrue
@@ -310,47 +316,233 @@
   \ResumeEntryLogo[#1]{#2}\hspace{0.38em}#3%
 }
 
-\newcommand{\LoadResumeBasicInfo}{%
-  \IfFileExists{basic_info/basic_info.json}{%
-    \JSONParseFromFile{\ResumeBasicInfoJSON}{basic_info/basic_info.json}%
-  }{%
-    \IfFileExists{src/basic_info/basic_info.json}{%
-      \JSONParseFromFile{\ResumeBasicInfoJSON}{src/basic_info/basic_info.json}%
-    }{%
-      \IfFileExists{basic_info/basic_info.example.json}{%
-        \JSONParseFromFile{\ResumeBasicInfoJSON}{basic_info/basic_info.example.json}%
-      }{%
-        \JSONParseFromFile{\ResumeBasicInfoJSON}{src/basic_info/basic_info.example.json}%
-      }%
-    }%
-  }%
-  \JSONParseValue[rescan,store in=\ResumeNameCN]{\ResumeBasicInfoJSON}{name_cn}%
-  \JSONParseValue[rescan,store in=\ResumeNameEN]{\ResumeBasicInfoJSON}{name_en}%
-  \JSONParseValue[rescan,store in=\ResumePhone]{\ResumeBasicInfoJSON}{phone}%
-  \JSONParseValue[rescan,store in=\ResumeSubtitleCN]{\ResumeBasicInfoJSON}{subtitle_cn}%
-  \JSONParseValue[rescan,store in=\ResumeSubtitleEN]{\ResumeBasicInfoJSON}{subtitle_en}%
-  \JSONParseValue[rescan,store in=\ResumeShowAvatar]{\ResumeBasicInfoJSON}{show_avatar}%
-  \JSONParseValue[rescan,store in=\ResumeAvatarFile]{\ResumeBasicInfoJSON}{avatar}%
-  \JSONParseValue[rescan,store in=\ResumeHeaderLogoFile]{\ResumeBasicInfoJSON}{header_logo}%
-  \JSONParseValue[rescan,store in=\ResumeEntryLogoFile]{\ResumeBasicInfoJSON}{entry_logo}%
+% --------------------------------------------------------------------------
+% Basic information configuration
+% --------------------------------------------------------------------------
+% The values below are populated by src/basic_info/basic_info.tex.  They
+% are initialized here so the class remains well-defined while the config is
+% being loaded and so a missing optional value degrades gracefully.
+\providecommand{\ResumeNameCN}{}
+\providecommand{\ResumeNameEN}{}
+\providecommand{\ResumePhone}{}
+\providecommand{\ResumeSubtitleCN}{}
+\providecommand{\ResumeSubtitleEN}{}
+\providecommand{\ResumeAvatarFile}{}
+\providecommand{\ResumeHeaderLogoFile}{}
+\providecommand{\ResumeEntryLogoFile}{}
+
+\NewDocumentCommand{\ResumeSetName}{m m}{%
+  \renewcommand{\ResumeNameCN}{#1}%
+  \renewcommand{\ResumeNameEN}{#2}%
 }
 
-\newcommand{\ResumeHeaderFieldRow}{%
-  \ifdefstring{\JSONParseArrayValueV}{true}{%
-    \ResumeHeaderItem{\JSONParseArrayValueI}{%
-      \ifdefempty{\JSONParseArrayValueIII}
-        {\JSONParseArrayValueII}
-        {\ResumeLink{\JSONParseArrayValueIII}{\JSONParseArrayValueII}}%
-    }%
-    \ifdefstring{\JSONParseArrayValueIV}{separator}{%
-      \contactsep
-    }{%
-      \ifdefstring{\JSONParseArrayValueIV}{line}{%
-        \par\vspace{0.13em}%
-      }{}%
-    }%
-  }{}%
+\NewDocumentCommand{\ResumeSetPhone}{m}{%
+  \renewcommand{\ResumePhone}{#1}%
 }
+
+\NewDocumentCommand{\ResumeSetSubtitle}{m m}{%
+  \renewcommand{\ResumeSubtitleCN}{#1}%
+  \renewcommand{\ResumeSubtitleEN}{#2}%
+}
+
+\NewDocumentCommand{\ResumeSetAvatar}{m m}{%
+  \renewcommand{\ResumeShowAvatar}{#1}%
+  \renewcommand{\ResumeAvatarFile}{#2}%
+}
+
+\NewDocumentCommand{\ResumeSetHeaderLogo}{m}{%
+  \renewcommand{\ResumeHeaderLogoFile}{#1}%
+}
+
+\NewDocumentCommand{\ResumeSetEntryLogo}{m}{%
+  \renewcommand{\ResumeEntryLogoFile}{#1}%
+}
+
+% Each field is stored as a small TeX command rather than as JSON.  The
+% public interface uses named keys so the configuration remains readable:
+% id, icon, label-cn, label-en, value-cn, value-en, url, after, and
+% show-in-header.  The id is kept for identification and future extensions;
+% the remaining keys control the rendered field.
+\ExplSyntaxOn
+\seq_new:N \g_resume_extra_fields_seq
+
+\tl_new:N \l_resume_field_id_tl
+\tl_new:N \l_resume_field_icon_tl
+\tl_new:N \l_resume_field_label_cn_tl
+\tl_new:N \l_resume_field_label_en_tl
+\tl_new:N \l_resume_field_value_cn_tl
+\tl_new:N \l_resume_field_value_en_tl
+\tl_new:N \l_resume_field_url_tl
+\tl_new:N \l_resume_field_after_tl
+\tl_new:N \l_resume_field_show_in_header_tl
+
+\keys_define:nn { resume / extra-field }
+  {
+    id .tl_set:N = \l_resume_field_id_tl,
+    icon .tl_set:N = \l_resume_field_icon_tl,
+    label-cn .tl_set:N = \l_resume_field_label_cn_tl,
+    label-en .tl_set:N = \l_resume_field_label_en_tl,
+    value-cn .tl_set:N = \l_resume_field_value_cn_tl,
+    value-en .tl_set:N = \l_resume_field_value_en_tl,
+    url .tl_set:N = \l_resume_field_url_tl,
+    after .choice:,
+    after / separator .code:n =
+      { \tl_set:Nn \l_resume_field_after_tl {separator} },
+    after / line .code:n =
+      { \tl_set:Nn \l_resume_field_after_tl {line} },
+    after / none .code:n =
+      { \tl_set:Nn \l_resume_field_after_tl {none} },
+    show-in-header .choice:,
+    show-in-header / true .code:n =
+      { \tl_set:Nn \l_resume_field_show_in_header_tl {true} },
+    show-in-header / false .code:n =
+      { \tl_set:Nn \l_resume_field_show_in_header_tl {false} },
+    show-in-header .default:n = true
+  }
+
+\cs_new_protected:Npn \resume_current_field_handler:nnnnnnnnn
+  #1#2#3#4#5#6#7#8#9
+  { }
+
+\cs_new_protected:Npn \resume_extra_field:nnnnnnnnn
+  #1#2#3#4#5#6#7#8#9
+  {
+    \resume_current_field_handler:nnnnnnnnn
+      {#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{#9}
+  }
+
+\cs_new_protected:Npn \resume_add_extra_field:n #1
+  {
+    \group_begin:
+    \tl_clear:N \l_resume_field_id_tl
+    \tl_clear:N \l_resume_field_icon_tl
+    \tl_clear:N \l_resume_field_label_cn_tl
+    \tl_clear:N \l_resume_field_label_en_tl
+    \tl_clear:N \l_resume_field_value_cn_tl
+    \tl_clear:N \l_resume_field_value_en_tl
+    \tl_clear:N \l_resume_field_url_tl
+    \tl_set:Nn \l_resume_field_after_tl {none}
+    \tl_set:Nn \l_resume_field_show_in_header_tl {true}
+    \keys_set:nn { resume / extra-field } {#1}
+    \seq_gput_right:Ne \g_resume_extra_fields_seq
+      {
+        \exp_not:N \resume_extra_field:nnnnnnnnn
+          {\exp_not:V \l_resume_field_id_tl}
+          {\exp_not:V \l_resume_field_icon_tl}
+          {\exp_not:V \l_resume_field_label_cn_tl}
+          {\exp_not:V \l_resume_field_label_en_tl}
+          {\exp_not:V \l_resume_field_value_cn_tl}
+          {\exp_not:V \l_resume_field_value_en_tl}
+          {\exp_not:V \l_resume_field_url_tl}
+          {\exp_not:V \l_resume_field_after_tl}
+          {\exp_not:V \l_resume_field_show_in_header_tl}
+      }
+    \group_end:
+  }
+
+\NewDocumentCommand{\ResumeExtraField}{m}
+  {\resume_add_extra_field:n {#1}}
+
+\cs_new_protected:Npn \resume_map_extra_fields:N #1
+  {
+    \cs_set_eq:NN \resume_current_field_handler:nnnnnnnnn #1
+    \seq_map_inline:Nn \g_resume_extra_fields_seq { ##1 }
+  }
+
+\cs_new_protected:Npn \resume_header_value:nn #1#2
+  {
+    \tl_if_blank:nTF {#1}
+      {#2}
+      {\ResumeLink{#1}{#2}}
+  }
+
+\cs_new_protected:Npn \resume_header_after:n #1
+  {
+    \str_case:nnF {#1}
+      {
+        {separator}{\contactsep}
+        {line}{\par\vspace{0.13em}}
+        {none}{}
+      }
+      {}
+  }
+
+\cs_new_protected:Npn \resume_header_field_cn:nnnnnnnnn
+  #1#2#3#4#5#6#7#8#9
+  {
+    \str_if_eq:nnT {#9}{true}
+      {
+        \ResumeHeaderItem{#2}{\resume_header_value:nn {#7}{#5}}
+        \resume_header_after:n {#8}
+      }
+  }
+
+\cs_new_protected:Npn \resume_header_field_en:nnnnnnnnn
+  #1#2#3#4#5#6#7#8#9
+  {
+    \str_if_eq:nnT {#9}{true}
+      {
+        \ResumeHeaderItem{#2}{\resume_header_value:nn {#7}{#6}}
+        \resume_header_after:n {#8}
+      }
+  }
+
+\tl_new:N \l_resume_extra_rows_tl
+
+% Build table rows before opening tabular.  Alignment tabs and row breaks
+% generated while a sequence is being mapped can otherwise terminate the map
+% after the first row on some TeX engines.
+\cs_new_protected:Npn \resume_collect_extra_row_cn:nnnnnnnnn
+  #1#2#3#4#5#6#7#8#9
+  {
+    \tl_put_right:Nn \l_resume_extra_rows_tl
+      {\faIcon{#2}\enspace #3 & #5\\[0.32em]}
+  }
+
+\cs_new_protected:Npn \resume_collect_extra_row_en:nnnnnnnnn
+  #1#2#3#4#5#6#7#8#9
+  {
+    \tl_put_right:Nn \l_resume_extra_rows_tl
+      {\faIcon{#2}\enspace #4 & #6\\[0.32em]}
+  }
+
+\NewDocumentCommand{\ResumeHeaderFieldsCN}{}{%
+  \group_begin:
+  \resume_map_extra_fields:N \resume_header_field_cn:nnnnnnnnn
+  \ResumeHeaderPhoneField
+  \group_end:
+}
+
+\NewDocumentCommand{\ResumeHeaderFieldsEN}{}{%
+  \group_begin:
+  \resume_map_extra_fields:N \resume_header_field_en:nnnnnnnnn
+  \ResumeHeaderPhoneField
+  \group_end:
+}
+
+\NewDocumentCommand{\ResumeExtraFieldsCN}{O{2.12cm}}{%
+  \group_begin:
+  \tl_clear:N \l_resume_extra_rows_tl
+  \resume_map_extra_fields:N \resume_collect_extra_row_cn:nnnnnnnnn
+  \noindent
+  \begin{tabular}{@{}>{\bfseries\raggedleft\arraybackslash}p{#1}@{\hspace{0.55em}}>{\arraybackslash}p{\dimexpr\linewidth-#1-0.55em\relax}@{}}%
+    \tl_use:N \l_resume_extra_rows_tl
+  \end{tabular}%
+  \group_end:
+}
+
+\NewDocumentCommand{\ResumeExtraFieldsEN}{O{2.12cm}}{%
+  \group_begin:
+  \tl_clear:N \l_resume_extra_rows_tl
+  \resume_map_extra_fields:N \resume_collect_extra_row_en:nnnnnnnnn
+  \noindent
+  \begin{tabular}{@{}>{\bfseries\raggedleft\arraybackslash}p{#1}@{\hspace{0.55em}}>{\arraybackslash}p{\dimexpr\linewidth-#1-0.55em\relax}@{}}%
+    \tl_use:N \l_resume_extra_rows_tl
+  \end{tabular}%
+  \group_end:
+}
+
+\ExplSyntaxOff
 
 \newcommand{\ResumeHeaderPhoneField}{%
   \ifdefempty{\ResumePhone}{}{%
@@ -359,49 +551,25 @@
   }%
 }
 
-\NewDocumentCommand{\ResumeHeaderFieldsCN}{}{%
-  \JSONParseArrayMapFunction[rescan]
-    {\ResumeBasicInfoJSON}{extra_fields}
-    [icon,value_cn,url,after,show_in_header]
-    {\ResumeHeaderFieldRow}%
-  \ResumeHeaderPhoneField
-}
-
-\NewDocumentCommand{\ResumeHeaderFieldsEN}{}{%
-  \JSONParseArrayMapFunction[rescan]
-    {\ResumeBasicInfoJSON}{extra_fields}
-    [icon,value_en,url,after,show_in_header]
-    {\ResumeHeaderFieldRow}%
-  \ResumeHeaderPhoneField
-}
-
-\newcommand{\ResumeExtraFieldRow}{%
-  \faIcon{\JSONParseArrayValueI}\enspace
-  \JSONParseArrayValueII & \JSONParseArrayValueIII\\[0.32em]%
-}
-
-\NewDocumentCommand{\ResumeExtraFieldsCN}{O{2.12cm}}{%
-  \JSONParseArrayMapFunction[
-    rescan,
-    code before={%
-      \noindent
-      \begin{tabular}{@{}>{\bfseries\raggedleft\arraybackslash}p{#1}@{\hspace{0.55em}}>{\arraybackslash}p{\dimexpr\linewidth-#1-0.55em\relax}@{}}%
-    },
-    code after={\end{tabular}}%
-  ]{\ResumeBasicInfoJSON}{extra_fields}[icon,label_cn,value_cn]
-    {\ResumeExtraFieldRow}%
-}
-
-\NewDocumentCommand{\ResumeExtraFieldsEN}{O{2.12cm}}{%
-  \JSONParseArrayMapFunction[
-    rescan,
-    code before={%
-      \noindent
-      \begin{tabular}{@{}>{\bfseries\raggedleft\arraybackslash}p{#1}@{\hspace{0.55em}}>{\arraybackslash}p{\dimexpr\linewidth-#1-0.55em\relax}@{}}%
-    },
-    code after={\end{tabular}}%
-  ]{\ResumeBasicInfoJSON}{extra_fields}[icon,label_en,value_en]
-    {\ResumeExtraFieldRow}%
+\NewDocumentCommand{\LoadResumeBasicInfo}{}{%
+  \IfFileExists{basic_info/basic_info.tex}{%
+    \input{basic_info/basic_info.tex}%
+  }{%
+    \IfFileExists{src/basic_info/basic_info.tex}{%
+      \input{src/basic_info/basic_info.tex}%
+    }{%
+      \IfFileExists{basic_info/basic_info.example.tex}{%
+        \input{basic_info/basic_info.example.tex}%
+      }{%
+        \IfFileExists{src/basic_info/basic_info.example.tex}{%
+          \input{src/basic_info/basic_info.example.tex}%
+        }{%
+          \ClassError{chicv}{basic_info.tex was not found}
+            {Create src/basic_info/basic_info.tex from the example file.}%
+        }%
+      }%
+    }%
+  }%
 }
 
 \AtEndDocument{\label{resume:lastpage}}

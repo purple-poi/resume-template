@@ -1,8 +1,8 @@
 # Resume Template
 
-An A4 resume template with Chinese and English versions, designed for XeLaTeX and Overleaf. The current resume content about donk is placeholder data. Shared profile information is stored in `src/basic_info/basic_info.json`, while the section content lives in `src/resume-cn.tex` and `src/resume-en.tex`.
+An A4 resume template with Chinese and English versions, designed for XeLaTeX and Overleaf. The current resume content about donk is placeholder data. Basic information is kept in the editable TeX configuration `src/basic_info/basic_info.tex`, while the section content lives in `src/resume-cn.tex` and `src/resume-en.tex`.
 
-The template supports optional avatars, dynamic header fields, header and entry logos, Font Awesome icons, and separate Chinese and English layouts.
+The template supports optional avatars, dynamic header fields, header and entry logos, Font Awesome icons, and separate Chinese and English layouts. No JSON parser or JSON data file is required.
 
 ## Quick Start
 
@@ -31,19 +31,20 @@ src/
   resume-en.tex
   chicv.cls
   basic_info/
-    basic_info.json
+    basic_info.tex
   assets/
     avatar.png
     entry-logo.png
     header-logo.png
   fonts/
     FontAwesome6.otf
-    Palatino Linotype.ttf
 ```
 
-If only one language is needed, the other `resume-*.tex` file may be omitted. Set `src/resume-cn.tex` or `src/resume-en.tex` as the main document, then select **XeLaTeX** under **Menu → Compiler** in Overleaf.
+If you start from the public template, copy `src/basic_info/basic_info.example.tex` to `src/basic_info/basic_info.tex` and edit that file in Overleaf. If only one language is needed, the other `resume-*.tex` file may be omitted. Set `src/resume-cn.tex` or `src/resume-en.tex` as the main document, then select **XeLaTeX** under **Menu → Compiler** in Overleaf.
 
-Public repositories should keep `src/basic_info/basic_info.example.json` only. Do not commit `basic_info.json` if it contains real personal information. See [HANDBOOK.md](./HANDBOOK.md) for details about profile fields, resume content, images, icons, and layout customization.
+The checked-in example file contains placeholder data. Keep your edited `basic_info.tex` private; it is ignored by Git.
+
+See [HANDBOOK.md](./HANDBOOK.md) for the configuration commands, field syntax, image paths, icons, and layout customization.
 
 ## Reference
 

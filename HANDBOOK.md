@@ -38,18 +38,18 @@ latexmk -xelatex -cd -outdir=../build src/resume-cn.tex
 
 - `src/resume-cn.tex`：中文章节、经历和技能正文；
 - `src/resume-en.tex`：英文章节、经历和技能正文；
-- `src/chicv.cls`：字体、页边距、通用页眉、Logo、章节、列表、技能表格和私有字段组件；
-- `src/basic_info/basic_info.json`：姓名、标题、头像配置和动态页眉字段；
+- `src/chicv.cls`：字体、页边距、通用页眉、Logo、章节、列表、技能表格和基础信息组件；
+- `src/basic_info/basic_info.tex`：姓名、标题、头像配置和动态页眉字段；
 - `src/assets/`：头像、小 Logo 和右上角大 Logo；
 - `src/fonts/`：Font Awesome 图标字体和 Palatino 粗体字体。
 
-Donk 只作为 `basic_info.json` 和正文中的占位内容。以后使用模板时，使用者也修改同一个 JSON 和两个主文件，不需要创建人物专属的 TeX adapter。
+Donk 只作为 `basic_info.example.tex` 和正文中的占位内容。以后使用模板时，使用者只需复制并编辑这个 TeX 配置文件和两个主文件，不需要创建人物专属的 adapter。
 
 ## 3. 修改简历内容
 
 ### 基础信息与页眉
 
-姓名、职业标题、电话、头像开关、头像路径、两个 Logo 路径和页眉字段全部在 `src/basic_info/basic_info.json` 中修改。中英文主文件已经调用：
+姓名、职业标题、电话、头像开关、头像路径、两个 Logo 路径和页眉字段全部在 `src/basic_info/basic_info.tex` 中修改。中英文主文件已经调用：
 
 ```tex
 \LoadResumeBasicInfo
@@ -66,7 +66,7 @@ Donk 只作为 `basic_info.json` 和正文中的占位内容。以后使用模�
   {\ResumeHeaderFieldsCN}
 ```
 
-英文版使用对应的 `EN` 变量。增加或删除页眉信息只需要修改 JSON 的 `extra_fields`，不需要修改这段 LaTeX。
+英文版使用对应的 `EN` 变量。增加或删除页眉信息只需要修改 TeX 配置中的 `\ResumeExtraField`，不需要修改这段布局代码。
 
 ### 章节与经历
 
@@ -104,13 +104,13 @@ Donk 只作为 `basic_info.json` 和正文中的占位内容。以后使用模�
 
 ### 开关头像
 
-在 `basic_info.json` 中使用 JSON 布尔值：
+在 `basic_info.tex` 中使用 `true` 或 `false`：
 
-```json
-"show_avatar": true
+```tex
+\ResumeSetAvatar{false}{assets/avatar.png}
 ```
 
-改为 `false` 即可隐藏头像，不要加引号。
+改为 `true` 即可显示头像。
 
 ### 替换图片
 
@@ -120,7 +120,7 @@ Donk 只作为 `basic_info.json` 和正文中的占位内容。以后使用模�
 - `src/assets/entry-logo.png`：经历标题前的小 Logo；
 - `src/assets/header-logo.png`：右上角大 Logo。
 
-如果更改文件名，只需同步修改 `basic_info.json` 中的 `avatar`、`entry_logo` 或 `header_logo`。
+如果更改文件名，只需同步修改 `basic_info.tex` 中的 `\ResumeSetAvatar`、`\ResumeSetEntryLogo` 或 `\ResumeSetHeaderLogo`。
 
 ### 调整图片尺寸和位置
 
@@ -167,75 +167,74 @@ Donk 只作为 `basic_info.json` 和正文中的占位内容。以后使用模�
 \RequirePackage[a4paper,left=0.6cm,right=0.6cm,top=1cm,bottom=1cm]{geometry}
 ```
 
-西文字体在 `\setmainfont` 中设置，当前正文使用 TeX Gyre Pagella，粗体使用 `src/fonts/Palatino Linotype.ttf`；图标使用 `src/fonts/FontAwesome6.otf`。中文字体按 `src/fonts/SimSun.ttf`、系统 `Songti SC`、Overleaf 自带 `FandolSong` 的顺序回退。替换字体时需要同步修改 `src/chicv.cls` 中的字体文件名或字体名称。
+西文字体在 `\setmainfont` 中设置，正文、粗体和斜体均使用 Overleaf 自带的 TeX Gyre Pagella；图标使用 `src/fonts/FontAwesome6.otf`。中文正文使用 Overleaf 自带的思源宋体 `Noto Serif CJK SC`，无衬线和等宽文字分别使用 `Noto Sans CJK SC` 与 `Noto Sans Mono CJK SC`；未安装 Noto CJK 的本地 TeX Live 环境自动回退到 Fandol。替换字体时需要同步修改 `src/chicv.cls` 中的字体名称。
 
 如果内容超过一页，优先精简文字，其次小幅降低条目间距和行距。不要删除页边距、字体或图片依赖来强行压缩页面。
 
-## 6. 使用基础信息 JSON
+## 6. 使用基础信息 TeX 配置
 
-`basic_info.example.json` 保存可公开的 Donk 占位数据。开始填写自己的资料时，复制为：
+`basic_info.example.tex` 保存可公开的 Donk 占位数据。开始填写自己的资料时，复制为：
 
 ```bash
-cp src/basic_info/basic_info.example.json src/basic_info/basic_info.json
+cp src/basic_info/basic_info.example.tex src/basic_info/basic_info.tex
 ```
 
-固定字段如下：
+也可以直接在 Overleaf 的文件树中新建或复制这个 `.tex` 文件。它是配置片段，不是独立文档，不要在里面添加 `\documentclass`、`\begin{document}` 或 `\end{document}`。
 
-- `name_cn`、`name_en`：中英文姓名；
-- `phone`：电话，非空时自动追加到页眉；
-- `subtitle_cn`、`subtitle_en`：姓名下方的职业标题；
-- `show_avatar`：头像开关，只能填写 JSON 布尔值 `true` 或 `false`；
-- `avatar`：头像路径；
-- `header_logo`：右上角 Logo 路径；
-- `entry_logo`：经历标题前的小 Logo 路径；
-- `extra_fields`：任意数量的动态字段。
+### 固定信息
 
-完整结构示例：
+在配置文件中使用以下命令：
 
-```json
-{
-  "name_cn": "你的姓名",
-  "name_en": "Your Name",
-  "phone": "",
-  "subtitle_cn": "职业标题",
-  "subtitle_en": "PROFESSIONAL TITLE",
-  "show_avatar": true,
-  "avatar": "assets/avatar.png",
-  "header_logo": "assets/header-logo.png",
-  "entry_logo": "assets/entry-logo.png",
-  "extra_fields": [
-    {
-      "id": "political_affiliation",
-      "icon": "F024",
-      "label_cn": "政治面貌",
-      "label_en": "Political Affiliation",
-      "value_cn": "",
-      "value_en": "",
-      "url": "",
-      "after": "line",
-      "show_in_header": false
-    }
-  ]
+```tex
+\ResumeSetName{你的中文姓名}{Your English Name}
+\ResumeSetPhone{+86 138 0000 0000}
+\ResumeSetSubtitle{职业标题}{PROFESSIONAL TITLE}
+\ResumeSetAvatar{true}{assets/avatar.png}
+\ResumeSetHeaderLogo{assets/header-logo.png}
+\ResumeSetEntryLogo{assets/entry-logo.png}
+```
+
+不需要的电话可以写成 `\ResumeSetPhone{}`。头像开关使用 `true` 或 `false`。
+
+### 动态页眉字段
+
+每条字段使用一个 `\ResumeExtraField`，使用键值配置：
+
+```tex
+\ResumeExtraField{
+  id = team,
+  icon = F0B1,
+  label-cn = 战队,
+  label-en = Team,
+  value-cn = Team Spirit,
+  value-en = Team Spirit,
+  url = https://teamspirit.gg,
+  after = separator,
+  show-in-header = true
 }
 ```
 
-每个动态字段的控制项为：
+可用键如下：
 
-- `id`：便于识别的唯一名称，不参与排版；
+- `id`：字段标识，便于识别和未来扩展；
 - `icon`：Font Awesome 四位十六进制编码；
-- `label_cn`、`label_en`：字段作为详情表格显示时使用的标签；
-- `value_cn`、`value_en`：中英文页眉中显示的值；
-- `url`：可选链接，空字符串表示普通文本；
-- `show_in_header`：是否显示在页眉；
-- `after`：字段后如何排版，可选 `separator`、`line` 或 `none`。
+- `label-cn`、`label-en`：中文和英文标签；
+- `value-cn`、`value-en`：中文和英文显示值；
+- `url`：可选链接，不填写时表示普通文本；
+- `after`：字段后如何排版，可选 `separator`、`line` 或 `none`，省略时默认为 `none`；
+- `show-in-header`：写 `true` 才显示在页眉，写 `false` 时只保留给详情表格使用，省略时默认为 `true`。
 
-例如，第一行放“单位 | 职位”时，单位设置为 `separator`，职位设置为 `line`。最后一个可见字段通常使用 `none`。数组可以继续追加所在地、邮箱、网站、语言、证书或政治面貌等字段，不需要修改 `src/chicv.cls`。
+没有内容的键可以省略，例如没有链接时不需要写 `url =`。键和值之间的空格可有可无；值中如果包含逗号，建议用花括号包起来，例如 `value-cn = {北京，中华人民共和国}`。
 
-主文件已经加载 JSON。新建其他主文件时，需要在 `\documentclass` 后加入：
+例如，第一条字段使用 `separator`、第二条使用 `line`，就会得到“单位 | 职位”并换到下一行的效果。字段按配置文件中的顺序显示，不需要修改 `src/chicv.cls`。
+
+主文件已经调用：
 
 ```tex
 \LoadResumeBasicInfo
 ```
+
+这个命令现在加载 `basic_info.tex`（找不到时自动加载 `basic_info.example.tex`），不再读取 JSON。新建其他主文件时，也在 `\documentclass` 后加入它。
 
 如果还想在正文中以“标签 / 值”表格显示全部动态字段，可以使用：
 
@@ -244,21 +243,30 @@ cp src/basic_info/basic_info.example.json src/basic_info/basic_info.json
 \ResumeExtraFieldsEN[1.8cm]
 ```
 
-当前中英文主文件使用 `private` 模式并直接显示 JSON 数据。真实的 `basic_info.json` 已被 `.gitignore` 忽略，不要手动提交到公开仓库；公开模板使用 `basic_info.example.json` 作为回退数据。
+`basic_info.tex` 中可以直接使用普通 LaTeX 内容；如果文字含有 `&`、`%`、`_`、`#` 等特殊字符，需要按 LaTeX 规则转义。真实的 `basic_info.tex` 已加入 `.gitignore`，公开仓库只保留示例配置。
 
 ## 7. 选择图标
 
-打开 `ref/fontawesome-icons.pdf`，按英文名称搜索并复制四位十六进制编码。JSON 和 `\cvsection` 中都只填写编码本身，不添加 `0x` 或 `\u`：
+打开 `ref/fontawesome-icons.pdf`，按英文名称搜索并复制四位十六进制编码。在 `basic_info.tex` 和 `\cvsection` 中都只填写编码本身，不添加 `0x` 或 `\u`：
 
-```json
-"icon": "F3C5"
+```tex
+\ResumeExtraField{
+  id = location,
+  icon = F3C5,
+  label-cn = 所在地,
+  label-en = Location,
+  value-cn = 俄罗斯,
+  value-en = Russia,
+  after = none,
+  show-in-header = true
+}
 ```
 
 ```tex
 \cvsection{F3C5}{所在地}
 ```
 
-固定字段若需要图标，可以在布局中写 `\faIcon{F095}`；动态字段直接设置 JSON 对象的 `icon` 值。
+固定字段若需要图标，可以在布局中写 `\faIcon{F095}`；动态字段直接设置 `icon = F095`。
 
 ## 8. 必要上传文件
 
@@ -272,21 +280,20 @@ src/
   resume-en.tex
   chicv.cls
   basic_info/
-    basic_info.json
+    basic_info.tex
   assets/
     avatar.png
     entry-logo.png
     header-logo.png
   fonts/
     FontAwesome6.otf
-    Palatino Linotype.ttf
 ```
 
 只编译中文时可以省略 `resume-en.tex`；只编译英文时可以省略 `resume-cn.tex`。`build/` 不需要上传。
 
 ### GitHub 模板仓库
 
-GitHub 中保留相同的模板源文件，但用示例 JSON 代替真实 JSON，并保留构建与文档文件：
+GitHub 中保留相同的模板源文件，但只提交示例 TeX 配置，不提交真实个人信息：
 
 ```text
 .gitignore
@@ -300,14 +307,13 @@ src/
   resume-en.tex
   chicv.cls
   basic_info/
-    basic_info.example.json
+    basic_info.example.tex
   assets/
     avatar.png
     entry-logo.png
     header-logo.png
   fonts/
     FontAwesome6.otf
-    Palatino Linotype.ttf
 ```
 
-不要上传包含真实姓名、电话或其他隐私信息的 `basic_info.json`。主文件找不到该文件时会自动读取 `basic_info.example.json`，因此公开模板仍可直接编译。
+不要上传包含真实姓名、电话或其他隐私信息的 `basic_info.tex`。主文件找不到该文件时会自动读取 `basic_info.example.tex`，因此公开模板仍可直接编译。
