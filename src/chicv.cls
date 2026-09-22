@@ -143,15 +143,22 @@
 \newcommand{\faList}{\faIcon{F00B}}
 
 \NewDocumentCommand{\ResumeLink}{m m}{\href{#1}{\uline{#2}}}
+\NewDocumentCommand{\IconLink}{s m m m}{%
+  \IfBooleanF{#1}{\ifstrempty{#2}{}{\faIcon{#2}\,}}%
+  \ifstrempty{#3}{#4}{\ResumeLink{#3}{#4}}%
+}
 
 \NewDocumentCommand{\Repo}{s m}{%
-  \IfBooleanF{#1}{\faGithub\,}%
-  \ResumeLink{https://github.com/#2}{%
-    \begingroup
-    \def\do##1/##2\@nil{{\color{resumegray}##1}/\textbf{##2}}%
-    \expandafter\do#2\@nil
-    \endgroup
-  }%
+  \IfBooleanTF{#1}
+    {\IconLink*{F09B}{https://github.com/#2}{\RepoName{#2}}}
+    {\IconLink{F09B}{https://github.com/#2}{\RepoName{#2}}}%
+}
+
+\NewDocumentCommand{\RepoName}{m}{%
+  \begingroup
+  \def\do##1/##2\@nil{{\color{resumegray}##1}/\textbf{##2}}%
+  \expandafter\do#1\@nil
+  \endgroup
 }
 
 \NewDocumentCommand{\ResumeIdentity}{m m}{%

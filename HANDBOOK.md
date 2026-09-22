@@ -291,6 +291,26 @@ cp src/basic_info/basic_info.example.tex src/basic_info/basic_info.tex
 
 固定字段若需要图标，可以在布局中写 `\faIcon{F095}`；动态字段直接设置 `icon = F095`。
 
+正文中需要“图标 + 超链接”时，使用通用命令：
+
+```tex
+\IconLink{F0AC}{https://example.com}{个人主页}
+```
+
+如果不需要图标，把第一个参数留空；如果不需要超链接，把第二个参数留空：
+
+```tex
+\IconLink{}{https://example.com}{个人主页}
+\IconLink{F0AC}{}{个人主页}
+```
+
+GitHub 仓库链接可以继续使用便捷命令，仓库名会自动加粗：
+
+```tex
+\Repo{owner/project}
+\Repo*{owner/project} % 不显示 GitHub 图标
+```
+
 ## 8. 必要上传文件
 
 ### Overleaf
